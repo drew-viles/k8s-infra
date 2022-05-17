@@ -18,3 +18,4 @@ terraform/CoreCluster/helm-values
 terraform/CoreCluster/manifests
 terraform/ClusterInfra/helm-values
 terraform/ClusterInfra/manifests
+terraform/configs
