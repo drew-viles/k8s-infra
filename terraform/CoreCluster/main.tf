@@ -13,6 +13,21 @@ resource "helm_release" "calico" {
   ]
 }
 
+#Cluster autoscaling
+resource "helm_release" "cluster_autosclaer" {
+  count            = var.deploy_cluster_autoscaler ?1 : 0
+  name             = "cluster_autoscaler"
+  repository       = "https://kubernetes.github.io/autoscaler"
+  chart            = "cluster_autoscaler"
+  namespace        = "kube-system"
+  create_namespace = true
+  version          = local.cluster_autoscaler_version
+
+  values = [
+    file("${path.module}/helm-values/cluster_autoscaler.yaml")
+  ]
+}
+
 #Rook - only required on large clusters
 resource "helm_release" "rook-ceph-operator" {
   count            = (var.large_cluster) ? 1 : 0
@@ -155,7 +170,6 @@ resource "helm_release" "metrics-server" {
   depends_on = [helm_release.calico]
 }
 
-
 ## Kube-Prometheus-Stack
 resource "helm_release" "kube-prometheus-stack" {
   name             = "kube-prometheus-stack"
@@ -170,6 +184,66 @@ resource "helm_release" "kube-prometheus-stack" {
   ]
   depends_on = [helm_release.calico]
 }
+
+## ECK
+resource "helm_release" "eck" {
+  name             = "eck"
+  repository       = "https://helm.elastic.co"
+  chart            = "eck-operator"
+  namespace        = "elastic"
+  create_namespace = true
+  version          = local.elastic_cloud_version
+
+  values = [
+    file("${path.module}/helm-values/eck-operator.yaml")
+  ]
+  depends_on = [helm_release.calico]
+}
+
+
+## Jaeger
+#resource "helm_release" "jaeger-operator" {
+#  name             = "jaeger-operator"
+#  repository       = "https://jaegertracing.github.io/helm-charts"
+#  chart            = "jaeger-operator"
+#  namespace        = "tracing"
+#  create_namespace = true
+#  version          = local.jaeger_operator_version
+#
+#  values = [
+#    file("${path.module}/helm-values/jaeger-operator.yaml")
+#  ]
+#  depends_on = [helm_release.calico]
+#}
+
+## Open Telemetry
+#resource "helm_release" "open-telemetry-collector" {
+#  name             = "open-telemetry-collector"
+#  repository       = "https://open-telemetry.github.io/opentelemetry-helm-charts"
+#  chart            = "open-telemetry-collector"
+#  namespace        = "tracing"
+#  create_namespace = true
+#  version          = local.open_telemetry_collector_version
+#
+#  values = [
+#    file("${path.module}/helm-values/open-telemetry-collector.yaml")
+#  ]
+#  depends_on = [helm_release.calico]
+#}
+
+#resource "helm_release" "open-telemetry-operator" {
+#  name             = "open-telemetry-operator"
+#  repository       = "https://open-telemetry.github.io/opentelemetry-helm-charts"
+#  chart            = "opentelemetry-operator"
+#  namespace        = "tracing"
+#  create_namespace = false
+#  version          = local.open_telemetry_operator_version
+#
+#  values = [
+#    file("${path.module}/helm-values/open-telemetry-operator.yaml")
+#  ]
+#  depends_on = [helm_release.calico]
+#}
 
 ## Nginx Ingress
 resource "helm_release" "nginx-ingress" {

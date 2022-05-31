@@ -19,3 +19,9 @@ variable "deploy_calico_operator" {
   default     = false
   description = "Specifies whether to install calico operator"
 }
+
+variable "deploy_cluster_autoscaler" {
+  type        = bool
+  default     = false
+  description = "Specifies whether to install the cluster autoscaler"
+}

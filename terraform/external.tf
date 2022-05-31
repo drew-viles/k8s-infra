@@ -37,7 +37,7 @@ module "plex-endpoint" {
       ports     = [
         {
           name     = "http"
-          port     = 80
+          port     = 32400
           protocol = "TCP"
           path     = "/"
         }

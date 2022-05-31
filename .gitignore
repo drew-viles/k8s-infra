@@ -19,3 +19,11 @@ terraform/CoreCluster/manifests
 terraform/ClusterInfra/helm-values
 terraform/ClusterInfra/manifests
 terraform/configs
+
+**/.terraform*
+**/.terraform.lock.hcl
+**/terraform.tfplan
+**/terraform.tfstate
+**/terraform.tfstate.backup
+
+terraform/ClusterInfra/ClusterInfraNew

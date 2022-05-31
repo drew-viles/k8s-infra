@@ -1,0 +1,280 @@
+global:
+  imagePullSecrets: []
+  # - name: "image-pull-secret"
+  priorityClassName: ""
+  rbac:
+    create: true
+
+  podSecurityPolicy:
+    enabled: false
+    useAppArmor: true
+
+  logLevel: 2
+
+  leaderElection:
+    namespace: "kube-system"
+    # leaseDuration: 60s
+    # renewDeadline: 40s
+    # retryPeriod: 15s
+
+installCRDs: true
+
+replicaCount: 1
+
+strategy: {}
+  # type: RollingUpdate
+  # rollingUpdate:
+  #   maxSurge: 0
+#   maxUnavailable: 1
+
+featureGates: ""
+
+image:
+  repository: quay.io/jetstack/cert-manager-controller
+  # tag: canary
+  # digest: sha256:0e072dddd1f7f8fc8909a2ca6f65e76c5f0d2fcfb8be47935ae3457e8bbceb20
+  pullPolicy: IfNotPresent
+
+clusterResourceNamespace: "cert-manager"
+
+serviceAccount:
+  create: true
+  # name: ""
+  # annotations: {}
+  automountServiceAccountToken: true
+
+extraArgs: []
+  # - --cluster-resource-namespace=kube-system
+  # - --enable-certificate-owner-ref=true
+# - --controllers=*,-certificaterequests-approver
+
+extraEnv: []
+# - name: SOME_VAR
+#   value: 'some value'
+
+resources: {}
+  # requests:
+  #   cpu: 10m
+#   memory: 32Mi
+
+securityContext:
+  runAsNonRoot: true
+# securityContext:
+#   enabled: false
+#   fsGroup: 1001
+#   runAsUser: 1001
+# securityContext:
+#   fsGroup: 1000
+#   runAsUser: 1000
+#   runAsNonRoot: true
+
+containerSecurityContext:
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+
+
+volumes: []
+
+volumeMounts: []
+# deploymentAnnotations: {}
+# podAnnotations: {}
+podLabels: {}
+# serviceLabels: {}
+# serviceAnnotations: {}
+# podDnsPolicy: "None"
+# podDnsConfig:
+#   nameservers:
+#     - "1.1.1.1"
+#     - "8.8.8.8"
+
+nodeSelector: {}
+
+ingressShim:
+  defaultIssuerName: "letsencrypt-prod"
+  defaultIssuerKind: "ClusterIssuer"
+#  defaultIssuerGroup: ""
+
+prometheus:
+  enabled: true
+  servicemonitor:
+    enabled: true
+    prometheusInstance: default
+    targetPort: 9402
+    path: /metrics
+    interval: 60s
+    scrapeTimeout: 30s
+    labels: {}
+
+affinity: {}
+tolerations:
+  - key: "dedicated"
+    operator: "Equal"
+    value: "core"
+    effect: "NoSchedule"
+
+webhook:
+  replicaCount: 1
+  timeoutSeconds: 10
+
+  strategy: {}
+    # type: RollingUpdate
+    # rollingUpdate:
+    #   maxSurge: 0
+  #   maxUnavailable: 1
+
+  securityContext:
+    runAsNonRoot: true
+
+  containerSecurityContext:
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+
+  # deploymentAnnotations: {}
+  # podAnnotations: {}
+  # mutatingWebhookConfigurationAnnotations: {}
+  # validatingWebhookConfigurationAnnotations: {}
+  # serviceAnnotations: {}
+  extraArgs: []
+  resources: {}
+    # requests:
+    #   cpu: 10m
+  #   memory: 32Mi
+
+  livenessProbe:
+    failureThreshold: 3
+    initialDelaySeconds: 60
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 1
+  readinessProbe:
+    failureThreshold: 3
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    successThreshold: 1
+    timeoutSeconds: 1
+
+  nodeSelector: {}
+  affinity: {}
+  tolerations: []
+  podLabels: {}
+  serviceLabels: {}
+
+  image:
+    repository: quay.io/jetstack/cert-manager-webhook
+    # registry: quay.io
+    # repository: jetstack/cert-manager-webhook
+    # tag: canary
+    # digest: sha256:0e072dddd1f7f8fc8909a2ca6f65e76c5f0d2fcfb8be47935ae3457e8bbceb20
+
+    pullPolicy: IfNotPresent
+
+  serviceAccount:
+    create: true
+    # name: ""
+    # annotations: {}
+    automountServiceAccountToken: true
+  securePort: 10250
+  hostNetwork: false
+  serviceType: ClusterIP
+  # loadBalancerIP:
+  url: {}
+  # host:
+
+cainjector:
+  enabled: true
+  replicaCount: 1
+
+  strategy: {}
+    # type: RollingUpdate
+    # rollingUpdate:
+    #   maxSurge: 0
+  #   maxUnavailable: 1
+  securityContext:
+    runAsNonRoot: true
+  containerSecurityContext:
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+  # deploymentAnnotations: {}
+  # podAnnotations: {}
+  extraArgs: []
+  resources: {}
+    # requests:
+    #   cpu: 10m
+  #   memory: 32Mi
+
+  nodeSelector: {}
+  affinity: {}
+  tolerations: []
+  podLabels: {}
+
+  image:
+    repository: quay.io/jetstack/cert-manager-cainjector
+    # registry: quay.io
+    # repository: jetstack/cert-manager-cainjector
+    # tag: canary
+    # digest: sha256:0e072dddd1f7f8fc8909a2ca6f65e76c5f0d2fcfb8be47935ae3457e8bbceb20
+    pullPolicy: IfNotPresent
+
+  serviceAccount:
+    create: true
+    # name: ""
+    # annotations: {}
+    automountServiceAccountToken: true
+
+startupapicheck:
+  enabled: true
+  securityContext:
+    runAsNonRoot: true
+  timeout: 1m
+  backoffLimit: 4
+  jobAnnotations:
+    helm.sh/hook: post-install
+    helm.sh/hook-weight: "1"
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+
+  # podAnnotations: {}
+  extraArgs: []
+#    - "--dns01-recursive-nameservers-only"
+#    - "--dns01-recursive-nameservers=8.8.4.4:43,1.1.1.1:53"
+
+  resources: {}
+    # requests:
+    #   cpu: 10m
+  #   memory: 32Mi
+
+  nodeSelector: {}
+  affinity: {}
+  tolerations: []
+  podLabels: {}
+
+  image:
+    repository: quay.io/jetstack/cert-manager-ctl
+    # registry: quay.io
+    # repository: jetstack/cert-manager-ctl
+    # tag: canary
+    # digest: sha256:0e072dddd1f7f8fc8909a2ca6f65e76c5f0d2fcfb8be47935ae3457e8bbceb20
+    pullPolicy: IfNotPresent
+
+  rbac:
+    annotations:
+      helm.sh/hook: post-install
+      helm.sh/hook-weight: "-5"
+      helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+
+  serviceAccount:
+    create: true
+    # name: ""
+    annotations:
+      helm.sh/hook: post-install
+      helm.sh/hook-weight: "-5"
+      helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+    automountServiceAccountToken: true

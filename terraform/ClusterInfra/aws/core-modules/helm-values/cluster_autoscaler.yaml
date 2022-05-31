@@ -1,0 +1,147 @@
+affinity: {}
+autoDiscovery:
+  clusterName: ${cluster_name}
+  tags:
+    - k8s.io/cluster-autoscaler/enabled
+    - k8s.io/cluster-autoscaler/{{ .Values.autoDiscovery.clusterName }}
+  roles:
+    - worker
+  labels: []
+
+autoscalingGroups: []
+autoscalingGroupsnamePrefix: []
+awsAccessKeyID: ""
+awsRegion: us-east-1
+awsSecretAccessKey: ""
+
+azureClientID: ""
+azureClientSecret: ""
+azureResourceGroup: ""
+azureSubscriptionID: ""
+azureTenantID: ""
+azureVMType: "AKS"
+azureClusterName: ""
+azureNodeResourceGroup: ""
+azureUseManagedIdentityExtension: false
+
+magnumClusterName: ""
+magnumCABundlePath: "/etc/kubernetes/ca-bundle.crt"
+
+clusterAPIMode: incluster-incluster  # incluster-incluster, incluster-kubeconfig, kubeconfig-incluster, kubeconfig-kubeconfig, single-kubeconfig
+clusterAPIKubeconfigSecret: ""
+clusterAPIWorkloadKubeconfigPath: /etc/kubernetes/value
+clusterAPICloudConfigPath: /etc/kubernetes/mgmt-kubeconfig
+clusterAPIConfigMapsNamespace: ""
+cloudConfigPath: /etc/gce.conf
+
+cloudProvider: ${cloud}
+containerSecurityContext: {}
+
+deployment:
+  annotations: {}
+dnsPolicy: ClusterFirst
+expanderPriorities: {}
+priorityConfigMapAnnotations: {}
+extraArgs:
+  logtostderr: true
+  stderrthreshold: info
+  v: 4
+  # write-status-configmap: true
+  # status-config-map-name: cluster-autoscaler-status
+  # leader-elect: true
+  # leader-elect-resource-lock: endpoints
+  # skip-nodes-with-local-storage: true
+  # expander: random
+  # scale-down-enabled: true
+  balance-similar-node-groups: true
+  # min-replica-count: 0
+  # scale-down-utilization-threshold: 0.5
+  # scale-down-non-empty-candidates-count: 30
+  # max-node-provision-time: 15m0s
+  # scan-interval: 10s
+  # scale-down-delay-after-add: 10m
+  # scale-down-delay-after-delete: 0s
+  # scale-down-delay-after-failure: 3m
+  # scale-down-unneeded-time: 10m
+  skip-nodes-with-system-pods: false
+
+extraEnv: {}
+extraEnvConfigMaps: {}
+extraEnvSecrets: {}
+envFromConfigMap: ""
+envFromSecret: ""
+extraVolumeSecrets: {}
+extraVolumes: []
+extraVolumeMounts: []
+fullnameOverride: ""
+
+image:
+  repository: k8s.gcr.io/autoscaling/cluster-autoscaler
+  tag: v1.23.0
+  pullPolicy: IfNotPresent
+  pullSecrets: []
+
+kubeTargetVersionOverride: ""
+nameOverride: ""
+nodeSelector: {}
+podAnnotations: {}
+podDisruptionBudget:
+  maxUnavailable: 1
+
+podLabels: {}
+
+additionalLabels: {}
+
+priorityClassName: "system-cluster-critical"
+
+rbac:
+  create: true
+  pspEnabled: false
+  clusterScoped: true
+  serviceAccount:
+    annotations: {
+      "eks.amazonaws.com/role-arn": "${autoscaler_role}"
+    }
+    create: true
+    name: "cluster-autoscaler"
+    automountServiceAccountToken: true
+
+replicaCount: 1
+resources: {}
+securityContext: {}
+
+service:
+  annotations: {}
+  labels: {}
+  externalIPs: []
+  loadBalancerIP: ""
+  loadBalancerSourceRanges: []
+  servicePort: 8085
+  portName: http
+  type: ClusterIP
+
+serviceMonitor:
+  enabled: true
+  interval: 10s
+  namespace: monitoring
+  selector:
+    release: prometheus-operator
+  path: /metrics
+
+prometheusRule:
+  enabled: false
+  additionalLabels: {}
+  namespace: monitoring
+  interval: null
+
+  rules: []
+
+tolerations:
+  - key: "dedicated"
+    operator: "Equal"
+    value: "core"
+    effect: "NoSchedule"
+
+topologySpreadConstraints: []
+updateStrategy: {}
+

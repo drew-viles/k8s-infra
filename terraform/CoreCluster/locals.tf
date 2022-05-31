@@ -1,5 +1,6 @@
 locals {
   calico_version                    = "3.23.0"
+  cluster_autoscaler_version        = "9.18.1"
   certmanager_version               = "1.8.0"
   coredns_version                   = "1.19.2"
   externaldns_version               = "1.9.0"
@@ -10,4 +11,8 @@ locals {
   prometheus_stack_version          = "35.0.3"
   rook_version                      = "1.9.2"
   sealed_secrets_version            = "2.1.8"
+  elastic_cloud_version             = "2.2.0"
+  jaeger_operator_version           = "2.30.0"
+  open_telemetry_collector_version  = "0.18.0"
+  open_telemetry_operator_version   = "0.6.9"
 }
